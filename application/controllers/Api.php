@@ -9,25 +9,30 @@ class Api extends CI_Controller {
 		Header('Access-Control-Allow-Headers: *'); //for allow any headers, insecure
 		Header('Access-Control-Allow-Methods: GET, POST, OPTIONS, PUT, DELETE'); //method allowed
 	}
+
 	public function index() {
 		echo base_url();
 	}
 
 	public function login() {
-		$email = $this->input->post("email");
-		$password = $this->input->post("password");
+		$rawData = $this->input->raw_input_stream;
+		$decoded = json_decode($rawData);
+		$email = $decoded->email;
+		$password = $decoded->password;
 		echo json_encode(array("status" => true, "email" => $email, "password" => $password));
 	}
 
 	public function addVendor()
 	{
-		$fullname = $this->input->post("fullname");
-		$email = $this->input->post("email");
-		$company_name = $this->input->post("company_name");
-		$phone = $this->input->post("phone");
-		$contact = $this->input->post("contact");
-		$expertise = $this->input->post("expertise");
-		$comments = $this->input->post("comments");
+		$rawData = $this->input->raw_input_stream;
+		$decoded = json_decode($rawData);
+		$fullname = $decoded->fullname;
+		$email = $decoded->email;
+		$company_name = $decoded->company_name;
+		$phone = $decoded->phone;
+		$contact = $decoded->contact;
+		$expertise = $decoded->expertise;
+		$comments = $decoded->comments;
 		$this->db->insert("vendors", array(
 			"fullname" => $fullname,
 			"email" => $email,
@@ -40,5 +45,15 @@ class Api extends CI_Controller {
 			"rate_card_url" => "dsicjjs.pdf",
 		));
 		echo json_encode(array("status" => false, "fullname" => $fullname));
+	}
+
+	public function getAllVendors()
+	{
+		$rawData = $this->input->raw_input_stream;
+		$decoded = json_decode($rawData);
+		$totalRecords = $this->db->count_all("vendors");
+		$this->db->limit($decoded->rows, $decoded->first);
+		$vendors = $this->db->get("vendors")->result();
+		echo json_encode(array("status" => true, "vendors" => $vendors, "totalRecords" => $totalRecords));
 	}
 }
