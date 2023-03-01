@@ -19,7 +19,14 @@ class Api extends CI_Controller {
 		$decoded = json_decode($rawData);
 		$email = $decoded->email;
 		$password = $decoded->password;
-		echo json_encode(array("status" => true, "email" => $email, "password" => $password));
+		$this->db->where(array("email" => $email, "password" => $password));
+		$count = $this->db->count_all_results("users");
+		if ($count) {
+			$token = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIxMjM0NTY3ODkwIiwibmFtZSI6IkpvaG4gRG9lIiwiaWF0IjoxNTE2MjM5MDIyfQ.SflKxwRJSMeKKF2QT4fwpMeJf36POk6yJV_adQssw5c";
+			echo json_encode(array("status" => true, "token" => $token));
+		} else {
+			echo json_encode(array("status" => false));
+		}
 	}
 
 	public function addVendor()
