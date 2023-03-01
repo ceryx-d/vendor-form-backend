@@ -85,6 +85,22 @@ class Api extends CI_Controller {
 		}
 	}
 
+	public function saveAdditionalFields() {
+		$vendorId = $this->input->post("vendorId");
+		$fields = $this->input->post("fields");
+		$fieldsArray = json_decode($fields);
+		$arrayToInsert = array();
+		foreach ($fieldsArray as $field) {
+			$arrayToInsert[] = array(
+				"vendor_id" => $vendorId,
+				"data_name" => $field->name,
+				"data_value" => $field->value,
+			);
+		}
+		$this->db->insert_batch("vendor_additional_data", $arrayToInsert);
+		echo json_encode(array("status" => true, "vendorId" => $vendorId, "array" => $arrayToInsert));
+	}
+
 	public function getAllVendors()
 	{
 		$rawData = $this->input->raw_input_stream;
