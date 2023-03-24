@@ -124,4 +124,12 @@ class Api extends CI_Controller {
 		$vendors = $this->db->get("vendors")->result();
 		echo json_encode(array("status" => true, "vendors" => $vendors, "totalRecords" => $totalRecords));
 	}
+	public function getVendorDetails()
+	{
+		$rawData = $this->input->raw_input_stream;
+		$decoded = json_decode($rawData);
+		$this->db->where("id", $decoded->vendorId);
+		$vendors = $this->db->get("vendors")->row();
+		echo json_encode(array("status" => true, "details" => $vendors));
+	}
 }
